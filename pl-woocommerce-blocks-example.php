@@ -17,30 +17,45 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Registers the block using the metadata loaded from the `block.json` file.
- * Behind the scenes, it registers also all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://developer.wordpress.org/block-editor/tutorials/block-tutorial/writing-your-first-block-type/
- */
-function pl_woocommerce_blocks_example_block_init() {
-	register_block_type( __DIR__ );
-}
-add_action( 'plugins_loaded', 'pl_woocommerce_blocks_example_block_init' );
+use \Pluginslab\WooCommerce_Blocks_Example;
+
+// Plugin init hook.
+add_action( 'plugins_loaded', 'pl_woocommerce_blocks_example_init' );
 
 /**
- * Registers the frontend React component for the cart addon block.
+ * Initialize plugin.
  */
-function pl_woocommerce_blocks_example_enqueue_scripts() {
+function pl_woocommerce_blocks_example_init() {
+	load_plugin_textdomain( 'pl-woocommerce-blocks-example', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	$asset_file_frontend = include plugin_dir_path( __FILE__ ) . 'build/frontend.asset.php';
-	wp_enqueue_script(
-		'wc-blocks-cart-addons-scripts-frontend',
-		plugins_url( 'build/frontend.js', __FILE__ ),
-		$asset_file_frontend['dependencies'],
-		$asset_file_frontend['version'],
-		false
-	);
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		add_action( 'admin_notices', 'pl_woocommerce_blocks_example_woocommerce_deactivated' );
+		return;
+	}
+
+	if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Package' ) && version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '4.6.0', '>' ) ) {
+		add_action( 'admin_notices', 'pl_woocommerce_blocks_example_woocommerce_blocks_deactivated' );
+		return;
+	}
+
+	require_once 'includes/class-woocommerce-blocks-example.php';
+
+	global $pl_woocommerce_blocks_example;
+	$pl_woocommerce_blocks_example = new WooCommerce_Blocks_Example();
 }
-add_action( 'wp_enqueue_scripts', 'pl_woocommerce_blocks_example_enqueue_scripts' );
+
+/**
+ * WooCommerce Deactivated Notice.
+ */
+function pl_woocommerce_blocks_example_woocommerce_deactivated() {
+	/* translators: %s: WooCommerce link */
+	echo '<div class="error"><p>' . sprintf( esc_html__( 'Pluginslab WooCommerce Blocks Example Plugin requires %s to be installed and active.', 'pl-woocommerce-blocks-example' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</p></div>';
+}
+
+/**
+ * WooCommerce Blocks Deactivated Notice.
+ */
+function pl_woocommerce_blocks_example_woocommerce_blocks_deactivated() {
+	/* translators: %s: WooCommerce Blocks link */
+	echo '<div class="error"><p>' . sprintf( esc_html__( 'Pluginslab WooCommerce Blocks Example Plugin requires %s to be installed (v4.7 or higher) and active', 'pl-woocommerce-blocks-example' ), '<a href="https://woocommerce.com/products/woocommerce-gutenberg-products-block/" target="_blank">WooCommerce Blocks</a>' ) . '</p></div>';
+}
