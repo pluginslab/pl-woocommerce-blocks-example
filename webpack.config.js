@@ -6,6 +6,7 @@ module.exports = {
 	entry: {
 		...defaultConfig.entry,
 		frontend: './src/frontend.js',
+		payment_method: './src/payment-method/index.js',
 	},
 	module: {
 		...defaultConfig.module,

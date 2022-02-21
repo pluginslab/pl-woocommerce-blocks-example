@@ -32,8 +32,7 @@ function pl_woocommerce_blocks_example_init() {
 		add_action( 'admin_notices', 'pl_woocommerce_blocks_example_woocommerce_deactivated' );
 		return;
 	}
-
-	if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Package' ) && version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '4.6.0', '>' ) ) {
+	if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Package' ) && ! version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '4.6.0', '>' ) ) {
 		add_action( 'admin_notices', 'pl_woocommerce_blocks_example_woocommerce_blocks_deactivated' );
 		return;
 	}
