@@ -1,0 +1,13 @@
+# Directories
+/node_modules/
+/vendor/
+/languages/
+
+# Files
+.DS_Store
+pl-woocommerce-block-example.zip
+/assets/**/*.min.js
+/assets/**/*.css
+
+# Blocks related
+/build/
