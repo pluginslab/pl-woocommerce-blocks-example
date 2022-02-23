@@ -60,6 +60,16 @@ class WooCommerce_Blocks_Example {
 			$asset_file_frontend['version'],
 			false
 		);
+
+		$asset_file_frontend = include plugin_dir_path( __FILE__ ) . '../build/filters.asset.php';
+		wp_enqueue_script(
+			'wc-blocks-cart-addons-scripts-filters',
+			plugins_url( '../build/filters.js', __FILE__ ),
+			$asset_file_frontend['dependencies'],
+			$asset_file_frontend['version'],
+			false
+		);
+
 	}
 
 	/**
